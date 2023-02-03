@@ -1,5 +1,24 @@
 ## Fully connected (FC) neural networks
 
+```bash
+Benchmarking the PyTorch FC training performance.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -b, --benchmark       benchmark the performance with various hyper-parameters
+  --use_gpu {0,1}       1: use the first GPU; 0: use CPU.
+  --input_type {f16,bf16,f32,f64}
+                        data type of the input X tensors. By default is 'f32'.
+  --layers LAYERS       number of hidden layers
+  --nodes NODES         the dimension of the hidden layers
+  --batch_size BATCH_SIZE
+                        batch size
+  --input_size INPUT_SIZE
+                        the dimension of the input layer
+  --output_size OUTPUT_SIZE
+                        the dimension of the output layer
+```
+
 ### Design
 
 - 5 configurable FC model hyperparameters: input_size $D_{in}$, output_size $D_{out}$,
