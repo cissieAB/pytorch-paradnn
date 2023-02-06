@@ -22,7 +22,9 @@ class BenchmarkSteps:
 
 
 class BenchmarkParamConfigs:
-    """Hyperparameters are taken from Table 2 in https://yuemmawang.github.io/publications/wang-mlsys2020.pdf."""
+    """
+    Hyperparameters are taken from Table 2 in https://yuemmawang.github.io/publications/wang-mlsys2020.pdf.
+    """
 
     class Layers:
         MIN = 4
@@ -58,11 +60,11 @@ class HyperParams:
 
     def __init__(self):
         # configurable to cli inputs
-        self.layers = 8
-        self.nodes = 1024
-        self.batch_size = 1024
-        self.input_size = 1000
-        self.output_size = 100
+        self.layers = BenchmarkParamConfigs.Layers.MIN
+        self.nodes = BenchmarkParamConfigs.Nodes.MIN
+        self.batch_size = BenchmarkParamConfigs.BatchSize.MIN
+        self.input_size = BenchmarkParamConfigs.InputSize.MIN
+        self.output_size = BenchmarkParamConfigs.OutputSize.MIN
         self.input_type = 'f32'
         self.use_gpu = False
 
@@ -73,6 +75,9 @@ class HyperParams:
         return self.nodes ** 2 * (self.layers - 1) + self.nodes * (self.input_size + self.output_size)
 
     def get_ops(self):
+        """
+        Get the estimated FLOPs of the network.
+        """
         return self.steps * self.batch_size * \
                self.get_num_params() * 6  # FWD OPs: 2x(#NN params); BKP Ops: ~ 2* FWD OPs
 
@@ -185,6 +190,7 @@ class Net:
         elif input_tensor_type == 'bf16':
             return torch.rand((self.params.batch_size, self.params.input_size), dtype=torch.bfloat16,
                               device=self.device)
+        # TODO: add tf 32 for A100
 
     def get_outputs(self):
         """
@@ -203,6 +209,10 @@ class Net:
             self.optimizer.zero_grad()
             cur_loss.backward()
             self.optimizer.step()
+
+    def train_amp(self):
+        # TODO
+        pass
 
     def benchmark(self):
         """
@@ -240,11 +250,11 @@ class Net:
 def get_args(parser):
     # tutorial here: https://docs.python.org/3/howto/argparse.html
     parser.add_argument("-b", "--benchmark", action="store_true",
-                        help="benchmark the performance with various hyper-parameters")
+                        help="benchmark the FC performance with various hyper-parameters")
 
     parser.add_argument("--use_gpu", type=int, choices=[0, 1], help="1: use the first GPU; 0: use CPU.")
     parser.add_argument("--input_type", choices=['f16', 'bf16', 'f32', 'f64'], default='f32',
-                        help="data type of the input X tensors. By default is 'f32'.")
+                        help="data type of the input X tensors. The default value is 'f32'.")
 
     parser.add_argument("--layers", type=int, help="number of hidden layers")
     parser.add_argument("--nodes", type=int, help="the dimension of the hidden layers")
@@ -300,13 +310,12 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Benchmarking the PyTorch FC training performance.")
     args = get_args(parser)
+    params.update_params_from_cli(args)
 
     if args.benchmark:
-        params.update_params_from_cli(args)
         benchmark_wrapper(params)
     else:  # single run mode
         print(f"Torch version {torch.__version__}\n")
-        params.update_params_from_cli(args)
         params.log_param_info()
         net = Net(params)
         duration, tflops = net.benchmark()
