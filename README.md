@@ -22,7 +22,7 @@ Currently, we include parametrized fully-connected (FC) and convolutional neural
 - [Convolutional neural networks (CNN)](./docs/cnn.md)
 
 ## Platforms
-We test our the benchmark on two JLab [ifarm](https://scicomp.jlab.org/scicomp/home) GPUs: T4 and A100 PCIe.
+We test our benchmark on two JLab [ifarm](https://scicomp.jlab.org/scicomp/home) GPUs: T4 and A100 PCIe.
 The hardware configurations are listed as below.
 
 ## TODOs

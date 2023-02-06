@@ -40,8 +40,8 @@ optional arguments:
 |:------------------------|:----------:|:--------------:|:-----------:|:------------:|
 | PyTorch tensor datatype | torch.half | torch.bfloat16 | torch.float | torch.double |
 
-- Total number of parameters ($\Phi$) in the FC network:
-  $ \Phi = D_{H} * D_{H} * (H - 1) + D_{H} * (D_{in} + D{out})$
+- Total number of parameters ( $\Phi$ ) in the FC network:
+  $\Phi = D_{H} * D_{H} * (H - 1) + D_{H} * (D_{in} + D{out})$
 - Throughput is calculated by: $ 6 * \Phi * bs * steps / time$
 
 

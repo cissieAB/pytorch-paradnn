@@ -3,7 +3,7 @@ Fully-connected NN models.
 
 mailto: xmei@jlab.org
 """
-import socket
+
 import argparse
 import gc
 import time
@@ -11,6 +11,8 @@ from collections import OrderedDict
 
 import torch
 import torch.nn as nn
+
+from utils import FCParamConfigs, get_device_name
 
 CSV_HEADER_STR = "device,input_type,layers,nodes,batch_size,input_size,output_size,#params,duration,tflops"
 
@@ -21,37 +23,6 @@ class BenchmarkSteps:
     ITER = 100
 
 
-class BenchmarkParamConfigs:
-    """
-    Hyperparameters are taken from Table 2 in https://yuemmawang.github.io/publications/wang-mlsys2020.pdf.
-    """
-
-    class Layers:
-        MIN = 4
-        MAX = 128
-
-    class Nodes:
-        MIN = 32
-        MAX = 8192
-
-    class BatchSize:
-        MIN = 64
-        MAX = 16384
-
-    class InputSize:
-        MIN = 2000
-        EX_MAX = 10000
-        INC = 2000
-
-    class OutputSize:
-        MIN = 200
-        EX_MAX = 1200
-        INC = 200
-
-    class AdamParams:
-        EPS = 1e-8  # 1e-7 for TensorFlow
-
-
 class HyperParams:
     """
     Build the NN model hyperparameters.
@@ -60,11 +31,11 @@ class HyperParams:
 
     def __init__(self):
         # configurable to cli inputs
-        self.layers = BenchmarkParamConfigs.Layers.MIN
-        self.nodes = BenchmarkParamConfigs.Nodes.MIN
-        self.batch_size = BenchmarkParamConfigs.BatchSize.MIN
-        self.input_size = BenchmarkParamConfigs.InputSize.MIN
-        self.output_size = BenchmarkParamConfigs.OutputSize.MIN
+        self.layers = FCParamConfigs.Layers.MIN
+        self.nodes = FCParamConfigs.Nodes.MIN
+        self.batch_size = FCParamConfigs.BatchSize.MIN
+        self.input_size = FCParamConfigs.InputSize.MIN
+        self.output_size = FCParamConfigs.OutputSize.MIN
         self.input_type = 'f32'
         self.use_gpu = False
 
@@ -79,7 +50,7 @@ class HyperParams:
         Get the estimated FLOPs of the network.
         """
         return self.steps * self.batch_size * \
-               self.get_num_params() * 6  # FWD OPs: 2x(#NN params); BKP Ops: ~ 2* FWD OPs
+            self.get_num_params() * 6  # FWD OPs: 2x(#NN params); BKP Ops: ~ 2* FWD OPs
 
     def update_params_from_cli(self, cli_args):
         """Update hyperparameters from cli inputs"""
@@ -161,7 +132,7 @@ class Net:
 
         self.model = self._get_model(self.params.input_type)
 
-        self.optimizer = torch.optim.Adam(self.model.parameters(), eps=BenchmarkParamConfigs.AdamParams.EPS)
+        self.optimizer = torch.optim.Adam(self.model.parameters(), eps=FCParamConfigs.AdamParams.EPS)
         self.loss = nn.CrossEntropyLoss()
 
     def _get_model(self, input_tensor_type):
@@ -198,12 +169,12 @@ class Net:
         """
         return torch.randint(high=self.params.output_size, size=(self.params.batch_size,), device=self.device)
 
-    def train(self, num_steps, timing_flag):
-        # Currently, AutocastCPU only support Bfloat16 as the autocast_cpu_dtype
+    def train(self, num_steps):
+
         for i in range(num_steps):
             pred = self.model(self.get_inputs(self.params.input_type))
             cur_loss = self.loss(pred, self.get_outputs())
-            # print(f"step={i + 1}, timing={timing_flag}, "
+            # print(f"step={i + 1}, "
             #       f"pred.dtype={pred.dtype}, loss.dtype={cur_loss.dtype}, loss={cur_loss.item()}")
 
             self.optimizer.zero_grad()
@@ -219,10 +190,10 @@ class Net:
         The main benchmarking process.
         """
         # warm-up steps
-        self.train(self.params.warmup_steps, False)
+        self.train(self.params.warmup_steps)
 
         start = self.start_timer()
-        self.train(self.params.steps, True)
+        self.train(self.params.steps)
         stop = self.end_timer()
 
         duration = stop - start  # in seconds
@@ -267,13 +238,6 @@ def get_args(parser):
     return parser.parse_args()
 
 
-def get_device_name(use_gpu):
-    if torch.cuda.is_available() and use_gpu:
-        return torch.cuda.get_device_name()
-    else:
-        return socket.gethostname() + "-cpu"
-
-
 def benchmark_wrapper(hyperparams):
     """
     Benchmark on the batch_size, input_size, output_size domain.
@@ -284,14 +248,14 @@ def benchmark_wrapper(hyperparams):
 
     device_str = get_device_name(hyperparams.use_gpu)
 
-    bs = BenchmarkParamConfigs.BatchSize.MIN
-    while bs <= BenchmarkParamConfigs.BatchSize.MAX:
-        for input_size in range(BenchmarkParamConfigs.InputSize.MIN,
-                                BenchmarkParamConfigs.InputSize.EX_MAX,
-                                BenchmarkParamConfigs.InputSize.INC):
-            for output_size in range(BenchmarkParamConfigs.OutputSize.MIN,
-                                     BenchmarkParamConfigs.OutputSize.EX_MAX,
-                                     BenchmarkParamConfigs.OutputSize.INC):
+    bs = FCParamConfigs.BatchSize.MIN
+    while bs <= FCParamConfigs.BatchSize.MAX:
+        for input_size in range(FCParamConfigs.InputSize.MIN,
+                                FCParamConfigs.InputSize.EX_MAX,
+                                FCParamConfigs.InputSize.INC):
+            for output_size in range(FCParamConfigs.OutputSize.MIN,
+                                     FCParamConfigs.OutputSize.EX_MAX,
+                                     FCParamConfigs.OutputSize.INC):
                 hyperparams.set_param_bs(bs)
                 hyperparams.set_param_input_size(input_size)
                 hyperparams.set_param_output_size(output_size)
