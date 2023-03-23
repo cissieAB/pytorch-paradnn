@@ -7,7 +7,7 @@
 #SBATCH --mail-type=END,FAIL
 #SBATCH --output=pytorch-paradnn-log_%j.out
 #SBATCH --job-name=pytorch-paradnn
-#SBATCH -t 3-00:00：00  # enlarge timelimit to 3 days
+#SBATCH -t 3-00:00:00  # enlarge timelimit to 3 days
 
 set -euxo pipefail
 
