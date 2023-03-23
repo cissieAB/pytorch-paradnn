@@ -1,0 +1,52 @@
+# xmei@jlab.org Mar/22/2023
+
+# Did not succeed in
+# singularity pull --docker-login xxx.sif docker://ngc_container
+# on ifarm as guided at
+# https://docs.nvidia.com/ngc/gpu-cloud/ngc-catalog-user-guide/index.html#converting-to-singularity-image
+# Thus rebuild the ngc container and push to my own docker account.
+#
+# Build docker image locally
+# docker login -u xxmei https://index.docker.io/v2/
+# docker push docker.io/xmei/nv-tf:tag
+#
+# On ifarm, pull it via
+# singularity pull nv-tf2.sif docker://xmei/nv-tf:tag
+# singularity remote login --username xxmei docker://docker.io
+#
+# Need to reset the singularity cache and tmp dirs
+# Not enough tmpdir error msg:
+# FATAL:   While making image from oci registry: error fetching image to cache:
+# while building SIF from layers: while creating squashfs: create command failed: exit status 1:
+  #Write failed because No space left on device
+
+######## CONTAINER info
+#bash-4.2$ singularity run nv-tf.sif nvcc --version
+#
+#================
+#== TensorFlow ==
+#================
+#
+#NVIDIA Release 22.09-tf2 (build 44878075)
+#TensorFlow Version 2.9.1
+#
+#Container image Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+#Copyright 2017-2022 The TensorFlow Authors.  All rights reserved.
+#
+#Various files include modifications (c) NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+#
+#This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+#By pulling and using the container, you accept the terms and conditions of this license:
+#https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+#
+#WARNING: The NVIDIA Driver was not detected.  GPU functionality will not be available.
+#   Use the NVIDIA Container Toolkit to start this container with GPU support; see
+#   https://docs.nvidia.com/datacenter/cloud-native/ .
+#
+#nvcc: NVIDIA (R) Cuda compiler driver
+#Copyright (c) 2005-2022 NVIDIA Corporation
+#Built on Wed_Sep_21_10:33:58_PDT_2022
+#Cuda compilation tools, release 11.8, V11.8.89
+#Build cuda_11.8.r11.8/compiler.31833905_0
+
+FROM nvcr.io/nvidia/tensorflow:22.09-tf2-py3
