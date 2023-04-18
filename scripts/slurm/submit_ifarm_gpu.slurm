@@ -36,11 +36,6 @@ source activate pytorch-cuda11_6  # "source activate" instead of "conda activate
 hostname_str=`hostname -s`
 platform=${hostname_str}-gpu
 
-# get input params
-
-# warm up
-srun python ${WK_DIR}/fc.py --use_gpu=1
-
 data_type='f32'  # TODO: make this a param
 outpath=./output/${platform}/fc_${SLURM_JOBID}
 mkdir -p $outpath

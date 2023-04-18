@@ -17,7 +17,7 @@ def get_dtypes_from_df(df):
 def print_dict(dic):
     """A helper function to print target line to csv format"""
     value_list = list(dic.values())
-    for v in value_list[:-2]:
+    for v in value_list[:-1]:
         print(v, end=",")
     print(value_list[-1])
 
@@ -61,9 +61,9 @@ def heatmap_x_node_y_bs(df, fixed_layers, fixed_input, fixed_output, fixed_dtype
 
     # plt.xticks(range(target_tb.shape[1]), np.log2(target_tb.columns).astype(int))
     plt.xticks(range(target_tb.shape[1]), target_tb.columns.astype(int))
-    plt.xlabel('Log2(#nodes)')
+    plt.xlabel('Hidden layer size')
     plt.yticks(range(target_tb.shape[0]), target_tb.index.astype(int))
-    plt.ylabel('Log2(batch size)')
+    plt.ylabel('Batch size')
     plt.title(f'TFLOPS ({title_str})')
     plt.savefig(f'heatmap_perf_{title_str}.png')
 
