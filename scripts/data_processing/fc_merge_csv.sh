@@ -12,7 +12,7 @@ HEADER_LINE="device,input_type,layers,nodes,batch_size,input_size,output_size,#p
 echo $HEADER_LINE > ${OUTPUT_FILE_PATH}
 
 # In file path, sciml21* indicates T4, sciml23* indicates A100
-for filename in ${INPUT_PATH}/*/benchmark_*.csv; do  # ==> change this line!
+for filename in ${INPUT_PATH}/sciml23*/*/benchmark_*.csv; do  # ==> change this line!
   echo "Reading input from " $filename
   while IFS=, read -r line; do
     if [[ $line == ${HEADER_LINE} ]]; then

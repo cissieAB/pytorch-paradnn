@@ -21,7 +21,7 @@ NODES_MIN = FCParamConfigs.Nodes.MIN
 NODES_MAX = FCParamConfigs.Nodes.MAX
 
 # creating dataframe
-df = pd.read_csv('../../results/fc_T4_f32_Feb-13.csv')  # TODO: change path into an input
+df = pd.read_csv('../../results/fc_T4_f32.csv')  # TODO: change path into an input
 """
        device  input_type   layers  ...   #params   duration    tflops
 0    Tesla T4         f32        4  ...     73472   0.188689  0.014952
