@@ -46,7 +46,8 @@ def heatmap_utilization_x_node_y_bs(df, peak_flops, fixed_layers, fixed_input, f
         & (df['output_size'] == fixed_output)
         & (df['input_type'].str.contains(fixed_dtype))
         ]
-    target_df.loc[:, 'tflops'] *= 100 / peak_flops
+    # print(set(target_df['nodes']))
+    target_df.loc[:, 'tflops'] *= 100 / peak_flops  # calculate percentage
 
     if not title_str:
         title_str = f'{fixed_dtype}_l_{fixed_layers}_input_{fixed_input}_output_{fixed_output}'
@@ -75,6 +76,7 @@ def main(argv):
 
     df = pd.read_csv(args['input_csv'])
     # df.info(verbose=True)
+    # print(set(df['nodes']))
 
     data_types = get_dtypes_from_df(df)
 
