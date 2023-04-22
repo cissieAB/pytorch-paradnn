@@ -224,11 +224,11 @@ def get_args(parser):
                         help="benchmark the FC performance with various hyper-parameters")
 
     parser.add_argument("--use_gpu", type=int, choices=[0, 1], help="1: use the first GPU; 0: use CPU.")
-    parser.add_argument("--input_type", choices=['f16', 'bf16', 'f32', 'f64'], default='f32',
+    parser.add_argument("--input_type", choices=['f16', 'bf16', 'f32'], default='f32',
                         help="data type of the input X tensors. The default value is 'f32'.")
 
     parser.add_argument("--layers", type=int, help="number of hidden layers")
-    parser.add_argument("--nodes", type=int, help="the dimension of the hidden layers")
+    parser.add_argument("--nodes", type=int, help="the dimension of the hidden layer")
 
     # params loops in the benchmark wrapper
     parser.add_argument("--batch_size", type=int, help="batch size")
