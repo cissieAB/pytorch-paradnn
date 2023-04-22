@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #SBATCH -N 1  # number of nodes
-#SBATCH --cpus-per-task=8
-#SBATCH --mem-per-cpu=4000  # MB
+#SBATCH --cpus-per-task=11  # <=== change this value to get enough memory
+#SBATCH --mem-per-cpu=8000  # MB
 #SBATCH --partition=gpu
 #SBATCH --mail-type=END,FAIL
 #SBATCH --output=pytorch-paradnn-log_%j.out

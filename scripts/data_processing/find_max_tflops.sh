@@ -10,7 +10,7 @@ OUTPUT_FILENAME=$2
 # the same as that in fc.py
 HEADER_LINE="device,input_type,layers,nodes,batch_size,input_size,output_size,#params,duration,tflops"
 
-# Check the file is exists or not
+# Delete same output filename
 if [ -f ${OUTPUT_FILENAME} ]; then
    rm ${OUTPUT_FILENAME}
    echo "${OUTPUT_FILENAME} is removed"
@@ -18,7 +18,6 @@ fi
 
 echo $HEADER_LINE >> ${OUTPUT_FILENAME} # >> to write to the end
 
-# sciml21* indicates T4, sciml23* indicates A100
 for filename in "${INPUT_PATH}"/*; do
   echo "Reading data in " ${filename};
   python3 find_max_flops.py -i ${filename} >> ${OUTPUT_FILENAME};
