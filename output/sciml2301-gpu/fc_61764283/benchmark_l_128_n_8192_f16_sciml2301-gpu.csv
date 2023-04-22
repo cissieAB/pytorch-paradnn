@@ -1,0 +1,2 @@
+device,input_type,layers,nodes,batch_size,input_size,output_size,#params,duration,tflops
+NVIDIA A100 80GB PCIe, f16, 128, 8192, 64, 2000, 200, 8540848128, 30.59601330757141, 10.719323619657324
