@@ -1,6 +1,7 @@
-import pandas as pd
+import argparse
+import sys
 import matplotlib.pyplot as plt
-import sys, argparse
+import pandas as pd
 
 
 def get_target_line_from_file(df, data_type):
