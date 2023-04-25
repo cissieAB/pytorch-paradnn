@@ -37,6 +37,40 @@ def get_title_str(dic):
     return f'{device_str}_{dtype_str}_l_{dic["layers"]}_input_{dic["input_size"]}_output_{dic["output_size"]}'
 
 
+def heatmap_flops_x_node_y_bs(df, fixed_layers, fixed_input, fixed_output, fixed_dtype, title_str=''):
+    """
+    Plot the heatmap performance with given layers, input, output, datatype. Title string is optional.
+    """
+    target_df = df.loc[
+        (df['layers'] == fixed_layers)
+        & (df['input_size'] == fixed_input)
+        & (df['output_size'] == fixed_output)
+        & (df['input_type'].str.contains(fixed_dtype))
+        ]
+
+    if not title_str:
+        title_str = f'{fixed_dtype}_l_{fixed_layers}_input_{fixed_input}_output_{fixed_output}'
+
+    target_tb = target_df.pivot_table(index='batch_size', columns=['nodes'], values='tflops',
+                                      aggfunc='mean')
+    print(target_tb)
+
+    plt.figure(figsize=(5, 4))
+    plt.clf()
+    # cmap reference: https://matplotlib.org/stable/tutorials/colors/colormaps.html
+    plt.imshow(target_tb, cmap='OrRd')
+    plt.colorbar()
+
+    # plt.xticks(range(target_tb.shape[1]), np.log2(target_tb.columns).astype(int))
+    plt.xticks(range(target_tb.shape[1]), target_tb.columns.astype(int), size=7)
+    plt.xlabel(r'Hidden layer size ($D_H$)', size=11)
+    plt.yticks(range(target_tb.shape[0]), target_tb.index.astype(int), size=7)
+    plt.ylabel(r'Batch size ($bs$)', size=11)
+
+    plt.tight_layout()
+    plt.savefig(f'heatmap_flops_{title_str}.png')
+
+
 def heatmap_utilization_x_node_y_bs(df, peak_flops, fixed_layers, fixed_input, fixed_output, fixed_dtype, title_str=''):
     """
     Plot the heatmap performance with given layers, input, output, datatype. Title string is optional.
@@ -50,9 +84,6 @@ def heatmap_utilization_x_node_y_bs(df, peak_flops, fixed_layers, fixed_input, f
     # print(set(target_df['nodes']))
     target_df.loc[:, 'tflops'] *= 100 / peak_flops  # calculate percentage
 
-    if not title_str:
-        title_str = f'{fixed_dtype}_l_{fixed_layers}_input_{fixed_input}_output_{fixed_output}'
-
     target_tb = target_df.pivot_table(index='batch_size', columns=['nodes'], values='tflops',
                                       aggfunc='mean')
     # print(target_tb)
@@ -65,10 +96,11 @@ def heatmap_utilization_x_node_y_bs(df, peak_flops, fixed_layers, fixed_input, f
 
     # plt.xticks(range(target_tb.shape[1]), np.log2(target_tb.columns).astype(int))
     plt.xticks(range(target_tb.shape[1]), target_tb.columns.astype(int), size=7)
-    plt.xlabel(r'Hidden layer size ($D_H$)', size=9)
+    plt.xlabel(r'Hidden layer size ($D_H$)', size=11)
     plt.yticks(range(target_tb.shape[0]), target_tb.index.astype(int), size=7)
-    plt.ylabel(r'Batch size ($bs$)', size=9)
-    plt.title(f'Utilization rates compared to maximum (%)', size=9)
+    plt.ylabel(r'Batch size ($bs$)', size=11)
+
+    plt.tight_layout()
     plt.savefig(f'heatmap_perf_{title_str}.png')
 
 
