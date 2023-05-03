@@ -1,4 +1,4 @@
-# Used `ifarm` singularity containers and conda environments
+# `ifarm` singularity containers and conda environments
 
 ### Tensorflow
 
@@ -41,5 +41,3 @@ python3 hydra_train.py -c ../Hydra.cfg -D CDC_occupancyChunks -e 1000 -g 2 -d
 ```
 
 Training code is updated to TF2.11.1.
-Both code and results can be accessed
-[here](https://github.com/JeffersonLab/Hydra/tree/cissie_a100/scripts).
