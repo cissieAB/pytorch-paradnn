@@ -14,4 +14,4 @@ The bibtex information of the original paper is as below.
 }
 ```
 
-We test our benchmark set on two JLab [ifarm](https://scicomp.jlab.org/scicomp/home) GPUs: NVIDIA T4 and A100 80GB PCIe of compute capacity 7.5 and 8.0, respectively. Prelimary results are presented in the [CHEP 2023](https://www.jlab.org/conference/CHEP2023) [poster](./doccs/CHEP_GPU4ML4NP_05022023.pdf).
+We test our benchmark set on two JLab [ifarm](https://scicomp.jlab.org/scicomp/home) GPUs: NVIDIA T4 and A100 80GB PCIe of compute capacity 7.5 and 8.0, respectively. Prelimary results are presented in the [CHEP 2023](https://www.jlab.org/conference/CHEP2023) [poster](docs/CHEP_GPU4ML4NP_05022023.pdf).
